@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./Backend
+    container_name: backend
+    ports:
+      - "4001:4001"
+    environment:
+      - MongoDBURI=mongodb://mongo:27017/products
+    depends_on:
+      - mongodb
+    networks:
+      - app-network
+
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend
+    ports:
+      - "5173:80"
+    networks:
+      - app-network
+  
+  mongodb:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongo-data:
