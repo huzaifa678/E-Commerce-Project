@@ -24,7 +24,7 @@ jobs:
           name: Install dependencies and run tests
           command: |
             cd Backend
-            npm install
+            npm ci
             cat package.json
             npm run
             npm test
