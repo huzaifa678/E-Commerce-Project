@@ -1,0 +1,13 @@
+backend:
+  image: huzaifagill234/e-commerce-project-backend:latest
+  port: 4001
+
+frontend:
+  image: huzaifagill234/e-commerce-project-frontend:latest
+  port: 80
+
+mongodb:
+  image: mongo:latest
+  port: 27017
+  storage: 1Gi
+  database: products  
