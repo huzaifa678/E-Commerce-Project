@@ -7,6 +7,12 @@ executors:
     working_directory: ~/repo
 
 jobs:
+  runner-test:
+    machine: true
+    resource_class: my-dev/local-linux-runner
+    steps:
+      - run: echo "Hi I'm on the self-hosted runner!"
+
   backend-test:
     docker:
       - image: cimg/node:18.19
@@ -15,42 +21,22 @@ jobs:
         environment:
           MONGO_INITDB_DATABASE: testdb
     working_directory: ~/repo/Backend
-
     steps:
       - checkout
-
       - run:
-          name: Set Mongo URI for CI
+          name: Set Mongo URI
           command: echo 'export MONGO_URI="mongodb://mongodb:27017/testdb"' >> $BASH_ENV
-
       - run:
-          name: Debug current directory
-          command: |
-            pwd
-            ls -l
-            ls -l Backend
-            cat Backend/package.json
-
-      - run:
-          name: Install dependencies and run tests
+          name: Install & Run Tests
           command: |
             cd Backend
             npm ci
             npm test
 
-
   build:
     docker:
-      - image: cimg/base:current
-    resource_class: my-dev/medium
-    steps:
-      - run: echo "Container runner building...."
-
-
-  build-and-push:
-    docker:  
-      - image: cimg/base:current
-    resource_class: my-dev/medium
+      - image: cimg/base:22.04
+    resource_class: my-dev/local-linux-runner
     steps:
       - checkout
       - run:
@@ -59,6 +45,13 @@ jobs:
       - run:
           name: Build frontend image
           command: docker build -t $DOCKERHUB_USERNAME/e-commerce-project-frontend:latest ./Frontend
+
+  push:
+    docker:
+      - image: cimg/base:22.04
+    resource_class: my-dev/local-linux-runner
+    steps:
+      - checkout
       - run:
           name: Docker login
           command: echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
@@ -69,11 +62,10 @@ jobs:
           name: Push frontend image
           command: docker push $DOCKERHUB_USERNAME/e-commerce-project-frontend:latest
 
-
   deploy:
-    docker:  
-      - image: cimg/base:current
-    resource_class: my-dev/medium
+    docker:
+      - image: cimg/base:22.04
+    resource_class: my-dev/local-linux-runner
     steps:
       - checkout
       - run:
@@ -85,19 +77,19 @@ jobs:
               --set frontend.image=$DOCKERHUB_USERNAME/e-commerce-project-frontend:latest
 
 workflows:
-  version: 2
-  build-workflow:
-    jobs:
-      - build
+  version: 2.1
   ci-cd-workflow:
     jobs:
-      - backend-test
+      - runner-test
+      - backend-test:
+          requires:
+            - runner-test
       - build:
           requires:
             - backend-test
-      - build-and-push:
+      - push:
           requires:
-            - backend-test
+            - build
       - deploy:
           requires:
-            - build-and-push
+            - push
