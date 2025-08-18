@@ -1,17 +1,65 @@
 version: 2.1
 
-orbs:
-  path-filtering: circleci/path-filtering@1.2.1 
+executors:
+  node-executor:
+    docker:
+      - image: cimg/node:18.19
+    working_directory: ~/repo/Backend
 
-setup: true   
+jobs:
+  backend-test:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: npm install
+      - run:
+          name: Run Jest tests
+          command: npm test
+
+  build-and-push:
+    machine: true
+    resource_class: my-dev/dev123
+    steps:
+      - checkout
+      - run:
+          name: Build backend image
+          command: docker build -t $DOCKERHUB_USERNAME/e-commerce-project-backend:latest ./Backend
+      - run:
+          name: Build frontend image
+          command: docker build -t $DOCKERHUB_USERNAME/e-commerce-project-frontend:latest ./Frontend
+      - run:
+          name: Login to Docker Hub
+          command: echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+      - run:
+          name: Push backend image
+          command: docker push $DOCKERHUB_USERNAME/e-commerce-project-backend:latest
+      - run:
+          name: Push frontend image
+          command: docker push $DOCKERHUB_USERNAME/e-commerce-project-frontend:latest
+
+  deploy:
+    machine: true
+    resource_class: my-dev/dev123
+    steps:
+      - checkout
+      - run:
+          name: Deploy with Helm to Minikube
+          command: |
+            kubectl config use-context minikube
+            helm upgrade --install e-commerce-web-app ./e-commerce-project-chart \
+              --set backend.image=$DOCKERHUB_USERNAME/e-commerce-project-backend:latest \
+              --set frontend.image=$DOCKERHUB_USERNAME/e-commerce-project-frontend:latest
 
 workflows:
   version: 2
-  filter-and-continue:
+  ci-cd-workflow:
     jobs:
-      - path-filtering/filter:
-          mapping: |
-            Backend/.*: ci
-            frontend/.*: ci
-            e-commerce-project-chart/.*: cd
-          config-path: .circleci/continue-config.yml
+      - backend-test
+      - build-and-push:
+          requires:
+            - backend-test
+      - deploy:
+          requires:
+            - build-and-push
