@@ -71,6 +71,13 @@ jobs:
     resource_class: my-dev/my-runner-resource
     steps:
       - checkout
+
+      - run:
+          name: Add Homebrew bin to PATH
+          command: |
+            export PATH=$PATH:/opt/homebrew/bin
+            helm version  
+            
       - run:
           name: Deploy with Helm to Minikube
           command: |
