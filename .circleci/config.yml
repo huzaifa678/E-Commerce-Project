@@ -1,0 +1,14 @@
+version: 2.1
+
+setup: true   
+
+workflows:
+  version: 2
+  filter-and-continue:
+    jobs:
+      - path-filtering/filter:
+          mapping: |
+            Backend/.* ci
+            frontend/.* ci
+            e-commerce-project-chart/.* cd
+          config-path: .circleci/continue-config.yml

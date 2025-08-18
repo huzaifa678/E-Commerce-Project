@@ -1,0 +1,19 @@
+version: 2.1
+
+executors:
+  node-executor:
+    docker:
+      - image: cimg/node:18.19
+    working_directory: ~/repo/Backend
+
+jobs:
+  backend-test:
+    executor: node-executor
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: npm install
+      - run:
+          name: Run Jest tests
+          command: npm test

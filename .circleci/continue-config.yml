@@ -1,0 +1,5 @@
+version: 2.1
+
+import:
+  - .circleci/ci.yml
+  - .circleci/cd.yml

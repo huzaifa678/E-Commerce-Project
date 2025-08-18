@@ -1,0 +1,42 @@
+jobs:
+  build-and-push:
+    machine: true
+    resource_class: my-dev/dev123
+    steps:
+      - checkout
+  
+      - run:
+        name: Build backend image
+        command: docker build -t $DOCKERHUB_USERNAME/e-commerce-project-backend:latest ./Backend
+
+      - run:
+        name: Build frontend image
+        command: docker build -t $DOCKERHUB_USERNAME/e-commerce-project-frontend:latest ./Frontend
+
+      - run:
+        name: Login to Docker Hub
+        command: echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+
+      - run:
+        name: Push backend image
+        command: docker push $DOCKERHUB_USERNAME/e-commerce-project-backend:latest
+
+      - run:
+        name: Push frontend image
+        command: docker push $DOCKERHUB_USERNAME/e-commerce-project-frontend:latest
+
+
+deploy:
+  machine: true
+  resource_class: my-dev/dev123
+  steps:
+    - checkout
+
+    - run:
+          name: Deploy with Helm to Minikube
+          command: |
+            kubectl config use-context minikube
+
+            helm upgrade --install e-commerce-web-app ./e-commerce-project-chart \
+              --set backend.image=$DOCKERHUB_USERNAME/e-commerce-project-backend:latest \
+              --set frontend.image=$DOCKERHUB_USERNAME/e-commerce-project-frontend:latest
