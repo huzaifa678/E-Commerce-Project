@@ -38,18 +38,9 @@ jobs:
             npm ci
             npm test
 
-  build:
-    docker:
-      - image: cimg/base:22.04  
-    resource_class: my-dev/dev123
-    steps:
-      - checkout
-      - run:
-          name: Build the image 
-          command: echo "Building the image"
-
   build-and-push:
-    machine: true
+    docker:
+      - image: cimg/base:22.04
     resource_class: my-dev/dev123
     steps:
       - checkout
