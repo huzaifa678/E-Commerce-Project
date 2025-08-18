@@ -16,6 +16,9 @@ jobs:
           name: Print the current working directory
           command: pwd
       - run:
+          name: List the directories and files inside the current working directory
+          command: 
+      - run:
           name: Install dependencies
           command: npm install
       - run: 
