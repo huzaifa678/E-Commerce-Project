@@ -10,6 +10,7 @@ This is an E-Commerce web application built using the MERN stack.
 - **Backend**: Node.js (🟩)
 - **Database**: MongoDB (🍃)
 - **Containerization**: Docker (🐳)
+- **Orchestration**: Kubernetes  (minikube)
 
 ## Features
 
