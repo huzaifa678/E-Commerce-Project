@@ -56,14 +56,8 @@ jobs:
           fingerprints:
             - "SHA256:zXrpJ4+ifx//AMbcpmCSmX5hvCew8jVSUff67ir7yIY"
       - run:
-          name:
-            Print docker credentials
-          command: |
-                  echo "$DOCKERHUB_USERNAME"
-                  echo "$DOCKERHUB_PASS"
-      - run:
           name: Docker login
-          command: echo $DOCKERHUB_PASS | docker login -u $DOCKERHUB_USERNAME --password-stdin
+          command: echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
       - run:
           name: Push backend image
           command: docker push $DOCKERHUB_USERNAME/e-commerce-project-backend:latest
