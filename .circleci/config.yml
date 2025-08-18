@@ -11,7 +11,7 @@ workflows:
     jobs:
       - path-filtering/filter:
           mapping: |
-            Backend/.* ci
-            frontend/.* ci
-            e-commerce-project-chart/.* cd
+            Backend/.*: ci
+            frontend/.*: ci
+            e-commerce-project-chart/.*: cd
           config-path: .circleci/continue-config.yml
