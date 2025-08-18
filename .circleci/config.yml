@@ -49,7 +49,8 @@ jobs:
           command: echo "Building the image"
 
   build-and-push:
-    machine: true
+    docker:  
+      - image: cimg/base:current
     resource_class: my-dev/medium
     steps:
       - checkout
@@ -70,7 +71,8 @@ jobs:
           command: docker push $DOCKERHUB_USERNAME/e-commerce-project-frontend:latest
 
   deploy:
-    machine: true
+    docker:  
+      - image: cimg/base:current
     resource_class: my-dev/medium
     steps:
       - checkout
@@ -85,9 +87,6 @@ jobs:
 workflows:
   version: 2
   ci-cd-workflow:
-    concurrency:
-      group: ci-cd-group
-      cancel-in-progress: false
     jobs:
       - backend-test
       - build:
