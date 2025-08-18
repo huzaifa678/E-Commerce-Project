@@ -4,7 +4,7 @@ jobs:
   build:
     docker:
       - image: cimg/base:22.04
-    resource_class: my-dev/linux-runner-machine
+    resource_class: my-dev/my-runner-resource
     steps:
       - run: echo "Hi I'm on a Container Runner!"
 workflows:
