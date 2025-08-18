@@ -8,7 +8,14 @@ executors:
 
 jobs:
   backend-test:
-    executor: node-executor
+    docker:
+      - image: cimg/node:18.19
+      - image: mongo:6.0
+        name: mongodb
+        environment:
+          MONGO_INITDB_DATABASE: testdb
+    working_directory: ~/repo/Backend
+
     steps:
       - checkout
 
@@ -25,9 +32,8 @@ jobs:
           command: |
             cd Backend
             npm ci
-            cat package.json
-            npm run
             npm test
+
 
   build-and-push:
     machine: true
