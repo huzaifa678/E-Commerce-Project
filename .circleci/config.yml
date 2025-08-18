@@ -14,6 +14,9 @@ jobs:
       - run:
           name: Install dependencies
           command: npm install
+      - run: 
+          name: Check the scripts
+          command: npm run
       - run:
           name: Install Jest tests and Run Jest tests
           command: |
