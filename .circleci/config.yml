@@ -17,7 +17,7 @@ jobs:
           command: pwd
       - run:
           name: List the directories and files inside the current working directory
-          command: 
+          command: ls -l
       - run:
           name: Install dependencies
           command: npm install
