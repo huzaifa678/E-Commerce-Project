@@ -85,14 +85,14 @@ jobs:
 workflows:
   version: 2
   ci-cd-workflow:
+    concurrency:
+      group: ci-cd-group
+      cancel-in-progress: false
     jobs:
       - backend-test
       - build:
           requires:
             - backend-test
-          concurrency:
-            group: build-group
-            cancel-in-progress: false
       - build-and-push:
           requires:
             - build
