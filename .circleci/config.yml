@@ -15,11 +15,10 @@ jobs:
           name: Install dependencies
           command: npm install
       - run:
-          name: Install Jest tests
-          command: npm install --save-dev jest supertest
-      - run:
-          name: Run Jest tests
-          command: npm test
+          name: Install Jest tests and Run Jest tests
+          command: |
+            npm install --save-dev jest supertest
+            npm test
 
   build-and-push:
     machine: true
