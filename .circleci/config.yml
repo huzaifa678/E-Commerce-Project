@@ -1,107 +1,96 @@
 version: 2.1
- 
-workflows:
-  build-workflow:
-    jobs:
-      - runner
+
+
+executors:
+  node-executor:
+    docker:
+      - image: cimg/node:18.19
+    working_directory: ~/repo
+
 jobs:
-  runner:
+  runner-test:
     machine: true
     resource_class: my-dev/my-runner-resource
     steps:
-      - run: echo "Hi I'm on Runners!"
+      - run: echo "Hi I'm on the self-hosted runner!"
 
+  backend-test:
+    docker:
+      - image: cimg/node:18.19
+      - image: mongo:6.0
+        name: mongodb
+        environment:
+          MONGO_INITDB_DATABASE: testdb
+    working_directory: ~/repo/Backend
+    steps:
+      - checkout
+      - run:
+          name: Set Mongo URI
+          command: echo 'export MONGO_URI="mongodb://mongodb:27017/testdb"' >> $BASH_ENV
+      - run:
+          name: Install & Run Tests
+          command: |
+            cd Backend
+            npm ci
+            npm test
 
-# executors:
-#   node-executor:
-#     docker:
-#       - image: cimg/node:18.19
-#     working_directory: ~/repo
+  build:
+    docker:
+      - image: cimg/base:22.04
+    resource_class: my-dev/my-runner-resource
+    steps:
+      - checkout
+      - run:
+          name: Build backend image
+          command: docker build -t $DOCKERHUB_USERNAME/e-commerce-project-backend:latest ./Backend
+      - run:
+          name: Build frontend image
+          command: docker build -t $DOCKERHUB_USERNAME/e-commerce-project-frontend:latest ./Frontend
 
-# jobs:
-#   runner-test:
-#     machine: true
-#     resource_class: my-dev/linux-runner-machine
-#     steps:
-#       - run: echo "Hi I'm on the self-hosted runner!"
+  push:
+    docker:
+      - image: cimg/base:22.04
+    resource_class: my-dev/my-runner-resource
+    steps:
+      - checkout
+      - run:
+          name: Docker login
+          command: echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+      - run:
+          name: Push backend image
+          command: docker push $DOCKERHUB_USERNAME/e-commerce-project-backend:latest
+      - run:
+          name: Push frontend image
+          command: docker push $DOCKERHUB_USERNAME/e-commerce-project-frontend:latest
 
-#   backend-test:
-#     docker:
-#       - image: cimg/node:18.19
-#       - image: mongo:6.0
-#         name: mongodb
-#         environment:
-#           MONGO_INITDB_DATABASE: testdb
-#     working_directory: ~/repo/Backend
-#     steps:
-#       - checkout
-#       - run:
-#           name: Set Mongo URI
-#           command: echo 'export MONGO_URI="mongodb://mongodb:27017/testdb"' >> $BASH_ENV
-#       - run:
-#           name: Install & Run Tests
-#           command: |
-#             cd Backend
-#             npm ci
-#             npm test
+  deploy:
+    docker:
+      - image: cimg/base:22.04
+    resource_class: my-dev/my-runner-resource
+    steps:
+      - checkout
+      - run:
+          name: Deploy with Helm to Minikube
+          command: |
+            kubectl config use-context minikube
+            helm upgrade --install e-commerce-web-app ./e-commerce-project-chart \
+              --set backend.image=$DOCKERHUB_USERNAME/e-commerce-project-backend:latest \
+              --set frontend.image=$DOCKERHUB_USERNAME/e-commerce-project-frontend:latest
 
-#   build:
-#     docker:
-#       - image: cimg/base:22.04
-#     resource_class: my-dev/linux-runner-machine
-#     steps:
-#       - checkout
-#       - run:
-#           name: Build backend image
-#           command: docker build -t $DOCKERHUB_USERNAME/e-commerce-project-backend:latest ./Backend
-#       - run:
-#           name: Build frontend image
-#           command: docker build -t $DOCKERHUB_USERNAME/e-commerce-project-frontend:latest ./Frontend
-
-#   push:
-#     docker:
-#       - image: cimg/base:22.04
-#     resource_class: my-dev/linux-runner-machine
-#     steps:
-#       - checkout
-#       - run:
-#           name: Docker login
-#           command: echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-#       - run:
-#           name: Push backend image
-#           command: docker push $DOCKERHUB_USERNAME/e-commerce-project-backend:latest
-#       - run:
-#           name: Push frontend image
-#           command: docker push $DOCKERHUB_USERNAME/e-commerce-project-frontend:latest
-
-#   deploy:
-#     docker:
-#       - image: cimg/base:22.04
-#     resource_class: my-dev/linux-runner-machine
-#     steps:
-#       - checkout
-#       - run:
-#           name: Deploy with Helm to Minikube
-#           command: |
-#             kubectl config use-context minikube
-#             helm upgrade --install e-commerce-web-app ./e-commerce-project-chart \
-#               --set backend.image=$DOCKERHUB_USERNAME/e-commerce-project-backend:latest \
-#               --set frontend.image=$DOCKERHUB_USERNAME/e-commerce-project-frontend:latest
-
-# workflows:
-#   version: 2.1
-#   ci-cd-workflow:
-#     jobs:
-#       - runner-test
-#       - backend-test:
-#           requires:
-#             - runner-test
-#       - build:
-#           requires:
-#             - backend-test
-#       - push:
-#           requires:
-#             - build
-#       - deploy:
-#           requires:
-#             - push
+workflows:
+  version: 2.1
+  ci-cd-workflow:
+    jobs:
+      - runner-test
+      - backend-test:
+          requires:
+            - runner-test
+      - build:
+          requires:
+            - backend-test
+      - push:
+          requires:
+            - build
+      - deploy:
+          requires:
+            - push
