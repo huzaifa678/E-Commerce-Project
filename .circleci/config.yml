@@ -4,13 +4,17 @@ executors:
   node-executor:
     docker:
       - image: cimg/node:18.19
-    working_directory: ~/repo/Backend
+    working_directory: ~/repo
 
 jobs:
   backend-test:
     executor: node-executor
     steps:
       - checkout
+
+      - run:
+          name: Print the current working directory
+          command: pwd
       - run:
           name: Install dependencies
           command: npm install
