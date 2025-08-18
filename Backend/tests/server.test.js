@@ -6,12 +6,11 @@ import bcryptjs from "bcryptjs";
 import userRouter from "../route/users.route.js";
 import purchaseRouter from "../route/product.route.js";
 
+const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/testdb";
+
 beforeAll(async () => {
-  await mongoose.connect("mongodb://127.0.0.1:27017/testdb", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-});
+  await mongoose.connect(MONGO_URI);
+}, 30000);
 
 beforeEach(async () => {
   await mongoose.connection.db.dropDatabase();

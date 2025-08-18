@@ -20,6 +20,10 @@ jobs:
       - checkout
 
       - run:
+          name: Set Mongo URI for CI
+          command: echo 'export MONGO_URI="mongodb://mongodb:27017/testdb"' >> $BASH_ENV
+
+      - run:
           name: Debug current directory
           command: |
             pwd
