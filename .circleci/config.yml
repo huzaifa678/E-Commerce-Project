@@ -41,7 +41,15 @@ jobs:
 
   build:
     docker:
-    - image: cimg/base:22.04
+      - image: cimg/base:current
+    resource_class: my-dev/medium
+    steps:
+      - run: echo "Container runner building...."
+
+
+  build-and-push:
+    docker:  
+      - image: cimg/base:current
     resource_class: my-dev/medium
     steps:
       - checkout
@@ -51,14 +59,6 @@ jobs:
       - run:
           name: Build frontend image
           command: docker build -t $DOCKERHUB_USERNAME/e-commerce-project-frontend:latest ./Frontend
-
-  
-  push:
-    docker:
-      - image: cimg/base:22.04
-    resource_class: my-dev/medium
-    steps:
-      - checkout
       - run:
           name: Docker login
           command: echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
@@ -86,15 +86,18 @@ jobs:
 
 workflows:
   version: 2
+  build-workflow:
+    jobs:
+      - build
   ci-cd-workflow:
     jobs:
       - backend-test
       - build:
           requires:
             - backend-test
-      - push:
+      - build-and-push:
           requires:
-            - build
+            - backend-test
       - deploy:
           requires:
-            - push
+            - build-and-push
