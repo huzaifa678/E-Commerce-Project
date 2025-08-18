@@ -38,15 +38,6 @@ jobs:
             npm ci
             npm test
 
-  build:
-    docker:
-      - image: cimg/base:current
-    resource_class: my-dev/medium
-    steps:
-      - checkout
-      - run:
-          name: Build image
-          command: echo "Building the image"
 
   build-and-push:
     docker:  
@@ -89,12 +80,9 @@ workflows:
   ci-cd-workflow:
     jobs:
       - backend-test
-      - build:
-          requires:
-            - backend-test
       - build-and-push:
           requires:
-            - build
+            - backend-test
       - deploy:
           requires:
             - build-and-push
