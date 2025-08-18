@@ -90,6 +90,9 @@ workflows:
       - build:
           requires:
             - backend-test
+          concurrency:
+            group: build-group
+            cancel-in-progress: false
       - build-and-push:
           requires:
             - build
