@@ -1,16 +1,15 @@
 version: 2.1
-
-jobs:
-  build:
-    docker:
-      - image: cimg/base:current
-    resource_class: my-dev/my-runner-resource
-    steps:
-      - run: echo "Hi I'm on a Container Runner!"
+ 
 workflows:
   build-workflow:
     jobs:
-      - build
+      - runner
+jobs:
+  runner:
+    machine: true
+    resource_class: my-dev/my-runner-resource
+    steps:
+      - run: echo "Hi I'm on Runners!"
 
 
 # executors:
