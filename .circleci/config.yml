@@ -11,9 +11,11 @@ jobs:
     docker:
       - image: cimg/node:18.19
       - image: mongo:6.0
+      - image: cimg/base:current
         name: mongodb
         environment:
           MONGO_INITDB_DATABASE: testdb
+    resource_class: my-dev/dev123
     working_directory: ~/repo/Backend
 
     steps:
