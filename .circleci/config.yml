@@ -35,8 +35,7 @@ jobs:
             npm test
 
   build:
-    docker:
-      - image: cimg/base:22.04
+    machine: true
     resource_class: my-dev/my-runner-resource
     steps:
       - checkout
@@ -48,8 +47,7 @@ jobs:
           command: docker build -t $DOCKERHUB_USERNAME/e-commerce-project-frontend:latest ./Frontend
 
   push:
-    docker:
-      - image: cimg/base:22.04
+    machine: true
     resource_class: my-dev/my-runner-resource
     steps:
       - checkout
@@ -64,8 +62,7 @@ jobs:
           command: docker push $DOCKERHUB_USERNAME/e-commerce-project-frontend:latest
 
   deploy:
-    docker:
-      - image: cimg/base:22.04
+    machine: true
     resource_class: my-dev/my-runner-resource
     steps:
       - checkout
