@@ -39,9 +39,9 @@ jobs:
             npm test
 
 
-  build-and-push:
-    docker:  
-      - image: cimg/base:current
+  build:
+    docker:
+    - image: cimg/base:22.04
     resource_class: my-dev/medium
     steps:
       - checkout
@@ -51,8 +51,16 @@ jobs:
       - run:
           name: Build frontend image
           command: docker build -t $DOCKERHUB_USERNAME/e-commerce-project-frontend:latest ./Frontend
+
+  
+  push:
+    docker:
+      - image: cimg/base:22.04
+    resource_class: my-dev/medium
+    steps:
+      - checkout
       - run:
-          name: Login to Docker Hub
+          name: Docker login
           command: echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
       - run:
           name: Push backend image
@@ -60,6 +68,7 @@ jobs:
       - run:
           name: Push frontend image
           command: docker push $DOCKERHUB_USERNAME/e-commerce-project-frontend:latest
+
 
   deploy:
     docker:  
@@ -80,9 +89,12 @@ workflows:
   ci-cd-workflow:
     jobs:
       - backend-test
-      - build-and-push:
+      - build:
           requires:
             - backend-test
+      - push:
+          requires:
+            - build
       - deploy:
           requires:
-            - build-and-push
+            - push
