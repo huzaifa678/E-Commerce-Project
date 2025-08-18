@@ -13,30 +13,20 @@ jobs:
       - checkout
 
       - run:
-          name: Print the current working directory
-          command: pwd
-      - run:
-          name: List the directories and files inside the current working directory
-          command: ls -l
-      - run: 
-          name: Set the Backend directory as the current directory
-          command: cd Backend
-      - run:
-          name: List the directories and files inside the Backend directory
-          command: ls -l
-      - run:
-          name: Check the package.json file content
-          command: cat package.json
-      - run:
-          name: Install dependencies
-          command: npm install
-      - run: 
-          name: Check the scripts
-          command: npm run
-      - run:
-          name: Install Jest tests and Run Jest tests
+          name: Debug current directory
           command: |
-            npm install --save-dev jest supertest
+            pwd
+            ls -l
+            ls -l Backend
+            cat Backend/package.json
+
+      - run:
+          name: Install dependencies and run tests
+          command: |
+            cd Backend
+            npm install
+            cat Backend/package.json
+            npm run
             npm test
 
   build-and-push:
