@@ -9,7 +9,7 @@ executors:
 jobs:
   runner-test:
     machine: true
-    resource_class: my-dev/local-linux-runner
+    resource_class: my-dev/linux-runner-machine
     steps:
       - run: echo "Hi I'm on the self-hosted runner!"
 
@@ -36,7 +36,7 @@ jobs:
   build:
     docker:
       - image: cimg/base:22.04
-    resource_class: my-dev/local-linux-runner
+    resource_class: my-dev/linux-runner-machine
     steps:
       - checkout
       - run:
@@ -49,7 +49,7 @@ jobs:
   push:
     docker:
       - image: cimg/base:22.04
-    resource_class: my-dev/local-linux-runner
+    resource_class: my-dev/linux-runner-machine
     steps:
       - checkout
       - run:
@@ -65,7 +65,7 @@ jobs:
   deploy:
     docker:
       - image: cimg/base:22.04
-    resource_class: my-dev/local-linux-runner
+    resource_class: my-dev/linux-runner-machine
     steps:
       - checkout
       - run:
