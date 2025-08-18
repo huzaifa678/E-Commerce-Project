@@ -18,6 +18,9 @@ jobs:
       - run:
           name: List the directories and files inside the current working directory
           command: ls -l
+      - run: 
+          name: Set the Backend directory as the current directory
+          command: cd Backend
       - run:
           name: Install dependencies
           command: npm install
