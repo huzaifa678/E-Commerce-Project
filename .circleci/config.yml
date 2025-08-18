@@ -73,11 +73,9 @@ jobs:
       - checkout
 
       - run:
-          name: Add Homebrew bin to PATH
-          command: |
-            export PATH=$PATH:/opt/homebrew/bin
-            helm version  
-            
+          name: Set PATH
+          command: echo 'export PATH=$PATH:/opt/homebrew/bin' >> $BASH_ENV
+          
       - run:
           name: Deploy with Helm to Minikube
           command: |
