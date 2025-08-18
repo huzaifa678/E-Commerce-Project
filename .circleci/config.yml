@@ -84,15 +84,15 @@ jobs:
 
 workflows:
   version: 2
-  build-workflow:
-    jobs:
-      - build
   ci-cd-workflow:
     jobs:
       - backend-test
-      - build-and-push:
+      - build:
           requires:
             - backend-test
+      - build-and-push:
+          requires:
+            - build
       - deploy:
           requires:
             - build-and-push
