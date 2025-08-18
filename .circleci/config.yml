@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: cimg/base:current
+      - image: cimg/base:22.04
     resource_class: my-dev/linux-runner-machine
     steps:
       - run: echo "Hi I'm on a Container Runner!"
@@ -12,7 +12,7 @@ workflows:
     jobs:
       - build
 
-      
+
 # executors:
 #   node-executor:
 #     docker:
