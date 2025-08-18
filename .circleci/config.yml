@@ -11,7 +11,7 @@ jobs:
     docker:
       - image: cimg/node:18.19
       - image: mongo:6.0
-      - image: cimg/base:current
+      - image: cimg/base:22.04
         name: mongodb
         environment:
           MONGO_INITDB_DATABASE: testdb
