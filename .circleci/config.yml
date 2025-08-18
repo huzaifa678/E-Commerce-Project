@@ -52,6 +52,9 @@ jobs:
     resource_class: my-dev/my-runner-resource
     steps:
       - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "SHA256:zXrpJ4+ifx//AMbcpmCSmX5hvCew8jVSUff67ir7yIY"
       - run:
           name: Docker login
           command: echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
