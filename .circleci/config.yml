@@ -38,9 +38,18 @@ jobs:
             npm ci
             npm test
 
-  build-and-push:
+  build:
     docker:
-      - image: cimg/base:22.04
+      - image: cimg/base:current
+    resource_class: my-dev/dev123
+    steps:
+      - checkout
+      - run:
+          name: Build image
+          command: echo "Building the image"
+
+  build-and-push:
+    machine: true
     resource_class: my-dev/dev123
     steps:
       - checkout
@@ -78,9 +87,10 @@ workflows:
   ci-cd-workflow:
     jobs:
       - backend-test
+      - build
       - build-and-push:
           requires:
-            - backend-test
+            - build
       - deploy:
           requires:
             - build-and-push
