@@ -22,6 +22,12 @@ jobs:
           name: Set the Backend directory as the current directory
           command: cd Backend
       - run:
+          name: List the directories and files inside the Backend directory
+          command: ls -l
+      - run:
+          name: Check the package.json file content
+          command: cat package.json
+      - run:
           name: Install dependencies
           command: npm install
       - run: 
