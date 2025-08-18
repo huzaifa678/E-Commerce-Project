@@ -34,6 +34,7 @@ jobs:
             npm ci
             npm test
 
+
   build:
     machine: true
     resource_class: my-dev/my-runner-resource
@@ -60,6 +61,7 @@ jobs:
       - run:
           name: Push frontend image
           command: docker push $DOCKERHUB_USERNAME/e-commerce-project-frontend:latest
+          
 
   deploy:
     machine: true
