@@ -5,7 +5,5 @@ const router = express.Router();
 router.use(express.json());
 router.post("/payments", createPurchase);
 
-
-
 export default router;
 
