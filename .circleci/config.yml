@@ -41,7 +41,7 @@ jobs:
   build:
     docker:
       - image: cimg/base:current
-    resource_class: my-dev/dev123
+    resource_class: my-dev/medium
     steps:
       - checkout
       - run:
@@ -50,7 +50,7 @@ jobs:
 
   build-and-push:
     machine: true
-    resource_class: my-dev/dev123
+    resource_class: my-dev/medium
     steps:
       - checkout
       - run:
@@ -71,7 +71,7 @@ jobs:
 
   deploy:
     machine: true
-    resource_class: my-dev/dev123
+    resource_class: my-dev/medium
     steps:
       - checkout
       - run:
