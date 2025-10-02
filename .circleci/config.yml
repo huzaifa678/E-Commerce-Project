@@ -10,7 +10,7 @@ executors:
 jobs:
   runner-test:
     machine: true
-    resource_class: my-dev/my-runner-resource
+    resource_class: my-dev/my-runner-resource-v1
     steps:
       - run: echo "Hi I'm on the self-hosted runner!"
 
@@ -49,7 +49,7 @@ jobs:
 
   push:
     machine: true
-    resource_class: my-dev/my-runner-resource
+    resource_class: my-dev/my-runner-resource-v1
     steps:
       - checkout
       - add_ssh_keys:
@@ -68,7 +68,7 @@ jobs:
 
   deploy:
     machine: true
-    resource_class: my-dev/my-runner-resource
+    resource_class: my-dev/my-runner-resource-v1
     steps:
       - checkout
 
