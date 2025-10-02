@@ -2,9 +2,10 @@ import request from "supertest";
 import express from "express";
 import mongoose from "mongoose";
 import bcryptjs from "bcryptjs";
-
 import userRouter from "../route/users.route.js";
 import purchaseRouter from "../route/product.route.js";
+import Session from "../model/session.model.js";
+import { privateKey, publicKey } from "../middleware/keys.middleware.js";
 
 const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/testdb";
 
@@ -37,6 +38,12 @@ describe("User Signup & Login", () => {
     expect(res.statusCode).toBe(201);
     expect(res.body).toHaveProperty("user");
     expect(res.body.user).toHaveProperty("Email", "huzaifa433@example.com");
+    expect(res.body).toHaveProperty("accessToken");
+    expect(res.body).toHaveProperty("refreshToken");
+
+    const session = await Session.findOne({ refreshToken: res.body.refreshToken });
+    expect(session).not.toBeNull();
+    expect(session.UserName).toBe(res.body.UserName);
   });
 
   it("should not signup with duplicate email", async () => {
@@ -56,7 +63,7 @@ describe("User Signup & Login", () => {
     expect(res.body).toHaveProperty("message", "user's account exists");
   });
 
-  it("should login with correct credentials", async () => {
+  it("should login with correct credentials and return tokens", async () => {
     const hash = await bcryptjs.hash("secret123", 10);
     await mongoose.connection.collection("users").insertOne({
       UserName: "huzaifa433",
@@ -72,6 +79,34 @@ describe("User Signup & Login", () => {
     expect(res.statusCode).toBe(200);
     expect(res.body).toHaveProperty("message", "Successful login");
     expect(res.body.user).toHaveProperty("username", "huzaifa433");
+    expect(res.body).toHaveProperty("accessToken");
+    expect(res.body).toHaveProperty("refreshToken");
+
+    const session = await Session.findOne({ refreshToken: res.body.refreshToken });
+    expect(session).not.toBeNull();
+  });
+
+  it("should renew access token using refresh token", async () => {
+    const signupRes = await request(app).post("/api/users/signup").send({
+      UserName: "Huzaifa Gill",
+      Email: "huzaifagill433@gmail.com",
+      Password: "vdfvfvdfvdv"
+    });
+
+    const refreshToken = signupRes.body.refreshToken;
+
+    const res = await request(app).post("/api/users/renew").send({ refreshToken });
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty("accessToken");
+    expect(res.body).toHaveProperty("refreshToken");
+    expect(res.body.refreshToken).not.toBe(refreshToken);
+
+    const oldSession = await Session.findOne({ refreshToken });
+    expect(oldSession).toBeNull();
+
+    const newSession = await Session.findOne({ refreshToken: res.body.refreshToken });
+    expect(newSession).not.toBeNull();
   });
 
   it("should not login with wrong password", async () => {
@@ -93,9 +128,20 @@ describe("User Signup & Login", () => {
 });
 
 describe("Purchase API", () => {
+  let accessToken;
+
+  beforeAll(async () => {
+    const res = await request(app)
+      .post("/api/users/login")
+      .send({ UserName: "huzaifa433", Password: "secret123" });
+
+    accessToken = res.body.accessToken;
+  });
+
   it("should create a purchase", async () => {
     const res = await request(app)
       .post("/api/products/payments")
+      .set("Authorization", `Bearer ${accessToken}`) 
       .send({
         Address: "123 Main St",
         Payment_Method: "Credit Card",

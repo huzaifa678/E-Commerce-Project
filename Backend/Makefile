@@ -1,2 +1,2 @@
 build:
-    docker build -t backend .
+	docker build -t backend .

@@ -19,7 +19,7 @@ function Signup() {
       const response = await axios.post("http://localhost:4001/user/signup", userData);
       setTimeout(() => {
         navigate('/login');
-      }, 1000);
+      }, 3000);
       console.log("Server response:", response.data);
     } catch (error) {
       console.log("An error has occurred in the server: ", error);

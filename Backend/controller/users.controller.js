@@ -1,4 +1,7 @@
 import users from "../model/users.model.js";
+import Session from "../model/session.model.js";
+import { generateTokens, verifyRefreshToken } from "../middleware/auth.middleware.js";
+import { privateKey, publicKey } from "../middleware/keys.middleware.js";
 import bcryptjs from "bcryptjs";
 
 export const signup = async(req, res) => {
@@ -16,9 +19,32 @@ export const signup = async(req, res) => {
             Email,
             Password: hash
         });
-        await userCreated.save();
+        
+        try {
+            await userCreated.save();
+            console.log("User saved successfully");
+        } catch (err) {
+            console.error("Error saving user:", err);
+        }
+
+        const { accessToken, refreshToken } = await generateTokens({
+            id: userCreated.id,
+            username: userCreated.UserName,
+        });
+
+        const session = new Session({
+            username: userCreated.UserName,
+            refreshToken,
+        })
+
+        await session.save();
+
+        console.log("User created successfully:", userCreated); // Debugging log
+
         res.status(201).json({
             message: "User added successfully!",
+            accessToken,
+            refreshToken,
             user: {
                 id: userCreated.id,
                 UserName:userCreated.UserName,
@@ -50,9 +76,25 @@ export const login = async(req, res) => {
             console.log("Password mismatch"); // Debugging log
             return res.status(400).json({ message: "Invalid Username or Password" });
         }
+
+        const { accessToken, refreshToken } = await generateTokens({
+            id: user.id,
+            username: user.UserName,
+        });
+
+        const session = new Session({
+            username: user.UserName,
+            refreshToken,
+        });
+
+        await session.save();
+
+        console.log("User logged in successfully:", user.UserName); // Debugging log
         
         res.status(200).json({
             message: "Successful login",
+            accessToken,
+            refreshToken,
             user: {
                 id: user.id,
                 username: user.UserName,
@@ -66,3 +108,28 @@ export const login = async(req, res) => {
     }
 }
 
+export const renewAccessToken = async (req, res) => {
+  const { refreshToken } = req.body;
+  if (!refreshToken) {
+    return res.status(403).json({ message: "Refresh token not found" });
+  }
+
+  try {
+    const payload = await verifyRefreshToken(refreshToken);
+
+    const { accessToken, refreshToken: newRefresh } = await generateTokens({
+      id: payload.id,
+      username: payload.username,
+    });
+
+    const session = await Session.findOne({ username: payload.username });
+    if (!session) return res.status(403).json({ message: "Session not found" });
+
+    session.refreshToken = newRefresh;
+    await session.save();
+
+    return res.json({ accessToken, refreshToken: newRefresh });
+  } catch (err) {
+    return res.status(403).json({ message: "Invalid or expired refresh token" });
+  }
+};

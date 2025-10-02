@@ -1,5 +1,4 @@
 ---
-
 # E-Commerce Web Application 🛒
 
 This is an E-Commerce web application built using the MERN stack.
@@ -16,12 +15,15 @@ This is an E-Commerce web application built using the MERN stack.
 
 - **MERN Stack**: A powerful combination of MongoDB, Express.js, React.js, and Node.js.
 - **Containerization**: Docker is used to containerize the web application for easy deployment and scalability.
+- **Orchestration: Kubernetes minikube cluster is used for orchestrating the containerized web application.
+- **CI/CD: 
 
 ## Getting Started
 
 ### Prerequisites
 
 Make sure you have Docker installed on your machine.
+Make sure you have Minikube installed on your machine.
 
 ### Installation
 
@@ -43,5 +45,4 @@ Make sure you have Docker installed on your machine.
 
 4. **Access the application**:
     Open your browser and navigate to `http://localhost:3000`
-
 ---
