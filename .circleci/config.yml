@@ -37,7 +37,7 @@ jobs:
 
   build:
     machine: true
-    resource_class: my-dev/my-runner-resource
+    resource_class: my-dev/my-runner-resource-v1
     steps:
       - checkout
       - run:
