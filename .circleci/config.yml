@@ -68,13 +68,17 @@ jobs:
     steps:
       - checkout
       - aws-cli/setup
-      - aws-ecr/ecr_login
       - run:
           name: Get secrets manager credentials
           command: |
             aws secretsmanager get-secret-value --secret-id e-commmerce-app-production-credentials-v1 --query SecretString --output text | jq -r 'to_entries|map("\(.key)=\(.value)")|.[]' > .env
           path: ./Backend
       - aws-ecr/build_and_push_image:
+          auth:
+          - aws-cli/setup:
+              aws-access-key-id: AWS_ACCESS_KEY_ID
+              aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+              aws-region: AWS_REGION
           repo: e-commerce-proj-repo
           tag: latest
           path: ./Backend
@@ -120,11 +124,6 @@ workflows:
       - build_and_push_image:
           requires:
             - terraform-apply
-          auth:
-            - aws-cli/setup:
-              aws-access-key-id: AWS_ACCESS_KEY_ID
-              aws-secret-access-key: AWS_SECRET_ACCESS_KEY
-              aws-region: AWS_REGION
           context: terraform
       - deploy:
           requires:
