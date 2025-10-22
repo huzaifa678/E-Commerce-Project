@@ -68,7 +68,6 @@ jobs:
     steps:
       - checkout
       - aws-cli/setup
-      - aws-ecr/auth
       - run:
           name: Get secrets manager credentials
           command: |
