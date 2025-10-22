@@ -60,7 +60,6 @@ jobs:
           path: .
       - terraform/apply:
           path: .
-          approve: true
           var: |
             aws_region=${AWS_REGION}
 
