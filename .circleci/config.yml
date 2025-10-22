@@ -117,10 +117,12 @@ workflows:
             - terraform-validate-plan
           context: terraform
       - build_and_push_image:
+          auth:
+            - aws-cli/setup
           requires:
             - terraform-apply
           context: terraform
       - deploy:
           requires:
-            - build-and-push-backend
+            - build_and_push_image
           context: terraform
