@@ -72,6 +72,7 @@ jobs:
           command: |
             aws secretsmanager get-secret-value --secret-id e-commmerce-app-production-credentials-v1 --query SecretString --output text | jq -r 'to_entries|map("\(.key)=\(.value)")|.[]' > .env
           path: ./Backend
+      - aws-ecr/ecr_login
       - aws-ecr/build_and_push_image:
           repo: e-commerce-proj-repo
           tag: latest
