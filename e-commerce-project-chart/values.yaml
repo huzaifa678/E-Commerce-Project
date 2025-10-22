@@ -1,13 +1,54 @@
-backend:
-  image: huzaifagill234/e-commerce-project-backend:latest
-  port: 4001
+# backend:
+#   image: huzaifagill234/e-commerce-project-backend:latest
+#   port: 4001
 
-frontend:
-  image: huzaifagill234/e-commerce-project-frontend:latest
+# frontend:
+#   image: huzaifagill234/e-commerce-project-frontend:latest
+#   port: 80
+
+# mongodb:
+#   image: mongo:latest
+#   port: 27017
+#   storage: 1Gi
+#   database: products  
+
+
+domainName:
+  http: api.freeeasycrypto.com
+
+apiService:
+  e-commerce-api-service
+
+appName:
+  e-commerce-app-api
+
+httpPort:
+  80
+
+service:
   port: 80
 
-mongodb:
-  image: mongo:latest
-  port: 27017
-  storage: 1Gi
-  database: products  
+ingress:
+  enabled: true
+  ingressClassName: nginx
+
+replicas:
+  2
+
+image:
+  533267178572.dkr.ecr.us-east-1.amazonaws.com/e-commerce-proj-repo:latest
+
+server:
+  https://acme-v02.api.letsencrypt.org/directory
+
+email:
+  huzaifagill411@gmail.com
+
+tlsSecretName:
+  http: e-commerce-app-api-tls-secret
+
+ingressClass: 
+  nginx
+
+hostedZoneId:
+  Z01601922DP7HAM1NYV8Z
