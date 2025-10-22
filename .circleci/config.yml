@@ -63,7 +63,7 @@ jobs:
           var: |
             aws_region=${AWS_REGION}
 
-  build-and-push-image:
+  build_and_push_image:
     executor: node-executor
     steps:
       - checkout
@@ -72,7 +72,7 @@ jobs:
           command: |
             aws secretsmanager get-secret-value --secret-id e-commmerce-app-production-credentials-v1 --query SecretString --output text | jq -r 'to_entries|map("\(.key)=\(.value)")|.[]' > .env
           path: ./Backend
-      - aws-ecr/build-and-push-image:
+      - aws-ecr/build_and_push_image:
           repo: e-commerce-proj-repo
           tag: latest
           path: ./Backend
@@ -115,7 +115,7 @@ workflows:
           requires:
             - terraform-validate-plan
           context: terraform
-      - build-and-push-image:
+      - build_and_push_image:
           requires:
             - terraform-apply
           context: terraform
