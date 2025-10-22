@@ -68,6 +68,7 @@ jobs:
     steps:
       - checkout
       - aws-cli/setup
+      - aws-ecr/ecr_login
       - run:
           name: Get secrets manager credentials
           command: |
@@ -117,8 +118,6 @@ workflows:
             - terraform-validate-plan
           context: terraform
       - build_and_push_image:
-          auth:
-            - aws-cli/setup
           requires:
             - terraform-apply
           context: terraform
