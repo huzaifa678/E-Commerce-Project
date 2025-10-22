@@ -63,7 +63,7 @@ jobs:
           var: |
             aws_region=${AWS_REGION}
 
-  build-and-push-backend:
+  build-and-push-image:
     executor: node-executor
     steps:
       - checkout
@@ -115,7 +115,7 @@ workflows:
           requires:
             - terraform-validate-plan
           context: terraform
-      - build-and-push-backend:
+      - build-and-push-image:
           requires:
             - terraform-apply
           context: terraform
