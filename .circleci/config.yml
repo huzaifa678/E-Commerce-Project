@@ -24,23 +24,18 @@ jobs:
           MONGO_INITDB_DATABASE: testdb
     working_directory: ~/repo/Backend
     steps:
-      - checkout:
-          path: ~/repo/Backend
+      - checkout
       - run:
           name: Show package.json
           command: cat package.json
       - run:
           name: Set Mongo URI
           command: echo 'export MONGO_URI="mongodb://mongodb:27017/testdb"' >> $BASH_ENV
-
       - run:
-          name: Install dependencies (including dev)
-          command: npm ci
-          environment:
-            NODE_ENV: development
-      - run:
-          name: Run Tests
+          name: Install and Run Tests
           command: |
+            cd Backend
+            npm ci
             npm test
 
   terraform-validate-plan:
