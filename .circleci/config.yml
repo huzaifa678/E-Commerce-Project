@@ -97,10 +97,9 @@ jobs:
           command: |
             chmod +x ./e-commerce-project-chart/helm.sh
             ./e-commerce-project-chart/helm.sh
-      - helm/upgrade:
-          chart-path: ./e-commerce-project-chart
+      - helm/install_helm_chart:
+          chart: ./e-commerce-project-chart
           release-name: e-commerce-web-app
-          install: true
 
 workflows:
   version: 2
