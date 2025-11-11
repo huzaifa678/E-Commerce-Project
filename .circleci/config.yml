@@ -31,10 +31,15 @@ jobs:
       - run:
           name: Set Mongo URI
           command: echo 'export MONGO_URI="mongodb://mongodb:27017/testdb"' >> $BASH_ENV
+
       - run:
-          name: Install & Run Tests
+          name: Install dependencies (including dev)
+          command: npm ci
+          environment:
+            NODE_ENV: development
+      - run:
+          name: Run Tests
           command: |
-            npm ci
             npm test
 
   terraform-validate-plan:
