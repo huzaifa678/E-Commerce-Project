@@ -24,7 +24,8 @@ jobs:
           MONGO_INITDB_DATABASE: testdb
     working_directory: ~/repo/Backend
     steps:
-      - checkout
+      - checkout:
+          path: ~/repo/Backend
       - run:
           name: Show package.json
           command: cat package.json
