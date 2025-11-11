@@ -46,11 +46,11 @@ jobs:
       - checkout
       - aws-cli/setup
       - terraform/init:
-          path: .
+          path: terraform
       - terraform/validate:
-          path: .
+          path: terraform
       - terraform/plan:
-          path: .
+          path: terraform
 
 
   terraform-apply:
