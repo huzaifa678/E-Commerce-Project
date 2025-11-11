@@ -99,7 +99,7 @@ jobs:
             ./e-commerce-project-chart/helm.sh
       - helm/install_helm_chart:
           chart: ./e-commerce-project-chart
-          release-name: e-commerce-web-app
+          release_name: e-commerce-web-app
 
 workflows:
   version: 2
