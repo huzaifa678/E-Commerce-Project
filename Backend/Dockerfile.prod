@@ -14,10 +14,13 @@ WORKDIR /usr/src/app
 COPY --from=builder /usr/src/app /usr/src/app
 
 RUN useradd --user-group --create-home --shell /bin/false appuser
-USER appuser
+
+RUN chown -R appuser:appuser /usr/src/app
 
 COPY ./start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
+
+USER appuser
 
 ENV NODE_ENV=production
 EXPOSE 4001

@@ -111,7 +111,7 @@ resource "aws_iam_role_policy_attachment" "eks_cluster_creator_admin" {
 }
 
 data "aws_ssm_parameter" "eks_al2023_ami" {
-  name = "/aws/service/eks/optimized-ami/1.31/amazon-linux-2023/x86_64/standard/recommended/image_id"
+  name = "/aws/service/eks/optimized-ami/1.32/amazon-linux-2023/x86_64/standard/recommended/image_id"
 }
 
 resource "aws_launch_template" "eks_nodes" {
@@ -125,7 +125,12 @@ resource "aws_launch_template" "eks_nodes" {
 
   image_id = data.aws_ssm_parameter.eks_al2023_ami.value
 
-  user_data = base64encode(file("${path.module}/users_data.sh"))
+  user_data = base64encode(templatefile("${path.module}/users_data.tpl", {
+      cluster_name     = aws_eks_cluster.eks_cluster.name
+      cluster_endpoint = data.aws_eks_cluster.this.endpoint
+      cluster_ca       = data.aws_eks_cluster.this.certificate_authority[0].data
+      cidr             = "10.100.0.0/16"
+  }))
 
   tag_specifications {
     resource_type = "instance"
@@ -154,7 +159,10 @@ resource "aws_eks_node_group" "eks_node_group" {
     version = aws_launch_template.eks_nodes.latest_version
   }
 
-  depends_on = [aws_security_group_rule.allow_node_to_control_plane]
+  depends_on = [
+    aws_eks_cluster.eks_cluster,
+    aws_security_group_rule.allow_node_to_control_plane
+  ]
 }
 
 resource "aws_iam_role" "eks_node_role" {

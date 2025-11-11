@@ -21,3 +21,7 @@
 .idea/
 *.tmproj
 .vscode/
+
+templates/*-deployment.yaml
+templates/*-service.yaml
+templates/mongodb-pvc.yaml

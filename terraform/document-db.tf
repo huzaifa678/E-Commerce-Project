@@ -36,7 +36,7 @@ resource "aws_docdb_cluster" "docdb" {
 resource "aws_docdb_cluster_instance" "docdb_instance" {
   identifier         = "crypto-docdb-instance"
   cluster_identifier = aws_docdb_cluster.docdb.id
-  instance_class     = "db.t3.small"
+  instance_class     = "db.r5.large"
   apply_immediately  = true
 
   tags = {
