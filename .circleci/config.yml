@@ -88,7 +88,7 @@ jobs:
       - checkout
       - aws-cli/setup
       - kubernetes/install-kubectl
-      - helm/install
+      - helm/install_helm_client
       - run:
           name: Configure kubectl for EKS
           command: aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER_NAME
